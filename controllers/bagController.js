@@ -182,3 +182,36 @@ export const deleteBagItem = async (req, res) => {
     }
   };
   
+
+
+  export const getBagById = async (req, res) => {
+
+    try {
+
+        const bagId = req.params.id;
+        console.log(bagId);
+
+
+        const bag = await Bag.findOne({ _id:bagId }).populate(
+            "items.product",
+            "name price images sizes colors"
+        );
+
+        if (!bag) {
+            return res.status(404).json({ message: "Bag not found" });
+        } 
+
+        
+
+        res.status(200).json({ bag});
+
+
+    } catch (error) {
+
+        console.error("Error fetching bag for user:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+
+    }
+
+
+}

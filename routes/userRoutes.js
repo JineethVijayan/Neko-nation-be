@@ -1,5 +1,6 @@
 import express from 'express';
-import { findCurrentUser, signIn, signUP } from '../controllers/userController.js';
+import { findCurrentUser, logout, signIn, signUP } from '../controllers/userController.js';
+import authenticateUser from '../middlewares/userMiddleware.js';
 
 
 
@@ -14,9 +15,9 @@ userRouter.post('/signup',signUP);
 
 userRouter.post('/signIn',signIn);
 
-userRouter.get('/get-current-user',findCurrentUser);
+userRouter.get('/get-current-user',authenticateUser,findCurrentUser);
 
-
+userRouter.get('/logout',logout);
 
 
 export default userRouter ;

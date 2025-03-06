@@ -46,13 +46,15 @@ export const createProduct = async (req, res) => {
 
             const body = req.body;
 
-            const {name,price,description,category,gender,sizes,colors,stock,tags} = body;
+            const {name,price,description,category,interests,subcategory,gender,sizes,colors,stock,tags} = body;
 
      const createProduct = new Product({
         name,
         price,
         description,
         category,
+        subcategory,
+        interests,
         gender,
         sizes,
         colors,
@@ -125,4 +127,133 @@ export const getProductById = async(req,res) =>{
       console.error("Error searching products:", error);
       res.status(500).json({ success: false, message: "Server error" });
   }
+};
+
+
+export const getLatestProducts = async (req, res) => {
+    try {
+        const products = await Product.find().sort({ createdAt: -1 }).limit(10); // Sort by latest
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching products", error });
+    }
+};
+  
+
+ export const productByGender = async(req,res)=>{
+    try {
+        
+        const gender = req.params.gender;
+        const products = await Product.find({gender});
+        res.send(products);
+
+    } catch (error) {
+        console.log('error:',error);
+    }
+ }
+
+ export const productByInterests = async (req,res)=>{
+
+    try {
+        const interests = req.params.interests;
+        const products = await Product.find({interests});
+        res.send(products);
+
+    } catch (error) {
+        console.log('error:',error);
+    }
+
+ };
+
+
+ export const updateProduct = async (req, res) => {
+    try {
+        // console.log(req.files);
+        // console.log(req.body);
+
+        const productId = req.params.id; 
+        //console.log(productId);
+        
+        const body = req.body;
+        const { name, price, description, category, interests, subcategory, gender, sizes, colors, stock, tags, images } = body;
+console.log(images);
+
+        // Find the existing product
+        const existingProduct = await Product.findById(productId);
+
+      // console.log(existingProduct);
+        
+        if (!existingProduct) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        let newImages = existingProduct.images; // Start with existing images
+
+        // If new files are uploaded, upload to Cloudinary
+        if (req.files && req.files.length > 0) {
+            // Upload new images
+            const uploadedImages = await Promise.all(
+                req.files.map(file =>
+                    new Promise((resolve, reject) => {
+                        const stream = cloudinaryInstance.uploader.upload_stream(
+                            { folder: "product-images" },
+                            (error, result) => {
+                                if (error) {
+                                    console.error("Cloudinary upload error:", error);
+                                    return reject(error);
+                                }
+                                resolve(result.secure_url); // Resolve with the new image URL
+                            }
+                        );
+                        stream.end(file.buffer);
+                    })
+                )
+            );
+
+            newImages = uploadedImages; // Replace images with newly uploaded ones
+
+            // Optional: Delete old images from Cloudinary if needed
+            if (existingProduct.images && existingProduct.images.length > 0) {
+                existingProduct.images.forEach(async (imageUrl) => {
+                    const publicId = imageUrl.split("/").pop().split(".")[0]; // Extract public ID
+                    const result = await cloudinaryInstance.uploader.destroy(`product-images/${publicId}`);
+                    console.log(`Deleted image ${publicId}:`, result); // Log the response
+                    
+                    if (result.result !== "ok") {
+                        console.log(`Failed to delete image: ${publicId}`);
+                    }
+                });
+            }
+        }
+
+        // Update product in MongoDB
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            {
+                name,
+                price,
+                description,
+                category,
+                subcategory,
+                interests,
+                gender,
+                sizes,
+                colors,
+                stock,
+                images: newImages,
+                tags
+            },
+            { new: true } // Return updated document
+        );
+
+        if (!updatedProduct) {
+            return res.status(400).json({ message: "Failed to update product" });
+        }
+
+        return res.json({ message: "Product updated successfully", updatedProduct });
+
+    } catch (error) {
+        console.log("Error updating product:", error);
+        res.status(500).json({ message: "Failed to update product" });
+    }
 };
