@@ -1,5 +1,5 @@
 import express from "express";
-import { createProduct, getAllProducts, getLatestProducts, getProductById, getProductBySearch, productByGender, productByInterests, updateProduct } from "../controllers/ProductController.js";
+import { createProduct, getAllProducts, getLatestProducts, getProductById, getProductBySearch, productByGender, productByInterests, updateProduct } from "../controllers/productController.js";
 import upload from "../middlewares/uploadMiddleware.js";
 import authenticateManager from "../middlewares/managerMiddleware.js";
 
