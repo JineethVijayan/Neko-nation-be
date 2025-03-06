@@ -13,7 +13,7 @@ const app = express();
 
 app.use(cookieParser());
 
-app.use(cors({origin:'https://neko-nation-fe.vercel.app',credentials:true}))
+app.use(cors({origin:'https://www.nekonation.in',credentials:true}))
 
 app.use(express.json());
 
