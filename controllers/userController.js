@@ -14,7 +14,7 @@ export const signUP = async (req, res) => {
         const userExist = await User.findOne({ email });
 
         if (userExist) {
-            return res.send('user already exist')
+            return res.status(401).send('user already exist')
         }
 
         const saltRounds = 10;
@@ -32,7 +32,7 @@ export const signUP = async (req, res) => {
         const newUserCreated = await newUser.save();
 
         if (!newUserCreated) {
-            return res.send('new user is not created');
+            return res.status(403).send('new user is not created');
         }
 
         const token = userToken(newUserCreated);
@@ -48,11 +48,11 @@ export const signUP = async (req, res) => {
         });
 
 
-        res.send("signed up successfully")
+        res.status(200).send("signed up successfully")
 
 
     } catch (error) {
-        console.log(error, "something wrong");
+      
         res.status(500).send("Internal error");
     }
 

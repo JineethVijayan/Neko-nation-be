@@ -1,35 +1,60 @@
-// import DeliveryAddress from '../models/AddressModel.js';
-// import Bag from '../models/BagModel.js';
-// import Order from '../models/OrderModel.js';
+// order created in payment controller
 
-// export const createOrder = async (req, res) => {
-//   const { userId, addressId, bagId } = req.body;
+import Order from "../models/OrderModel.js";
 
-//   try {
-//     // Fetch the user's delivery address
-//     const address = await DeliveryAddress.findById(addressId);
-//     if (!address) {
-//       return res.status(400).json({ message: 'Address not found' });
-//     }
 
-//     // Fetch the user's bag (cart) with populated products
-//     const bag = await Bag.findById(bagId).populate('products.productId');
-//     if (!bag) {
-//       return res.status(400).json({ message: 'Bag not found' });
-//     }
+export const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find().populate("user").populate("address").populate("bag");
+        const totalOrders = await Order.countDocuments();
+        res.status(200).json({ orders, totalOrders });
 
-//     // Create the order
-//     const order = new Order({
-//       user: userId,
-//       address: addressId,
-//       bag: bagId, // Link to the bag (cart)
-//       paymentStatus: 'pending', // Initially set payment status to 'pending'
-//     });
+    } catch (error) {
+        res.status(500).send("Internal error");
+    }
+}
 
-//     const savedOrder = await order.save();
-//     res.status(200).json({ message: 'Order created successfully', order: savedOrder });
-//   } catch (error) {
-//     console.error('Error creating order:', error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
+
+export const updateOrder = async (req, res) => {
+    try {
+        const { orderId, orderStatus } = req.body;
+        if (!orderId || !orderStatus) return res.status(400).json({ message: "All fields are required" });
+        const updatedOrder = await Order.findByIdAndUpdate(
+            orderId,
+            { status: orderStatus },
+            { new: true }
+        );
+        if(!updatedOrder) return res.status(400).json({message:"Failed to update order"});
+
+        const orders = await Order.find().populate("user").populate("address").populate("bag");   /// to recollect the orders in frontend with out refreshing 
+
+        res.status(200).json({message:"order updated successfully",updatedOrder,orders})
+
+    } catch (error) {
+        res.status(500).json({ message: "Internal error" })
+    }
+}
+
+export const getOrderByUserId = async(req,res)=>{
+    try {
+      
+        const orderId = req.params.id; 
+
+        if(!orderId) return res.status(400).json({message:"order id required"});
+
+        const order = await Order.findOne({_id:orderId}).populate("user").populate("address").populate("bag").populate({
+            path: "bag",
+            populate: {
+              path: "items.product",
+              model: "Product",
+            },
+          });
+
+        if(!order) return res.status(400).json({message:"order not found"});
+        
+       res.status(200).json({message:"order found",order});    
+
+    } catch (error) {
+        res.status(500).json({message:"Internal error"})
+    }
+}

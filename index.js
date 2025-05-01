@@ -9,6 +9,7 @@ import bagRouter from "./routes/bagRoutes.js";
 import addressRouter from "./routes/addressRoutes.js";
 import paymentRouter from "./routes/paymentRoutes.js";
 import posterRouter from "./routes/posterRoutes.js";
+import orderRouter from "./routes/ordersRoutes.js";
 
 
 const app = express();
@@ -27,7 +28,8 @@ app.use('/api/v1/product',productRouter);
 app.use('/api/v1/poster',posterRouter)
 app.use('/api/v1/bag',bagRouter)
 app.use('/api/v1/address',addressRouter);
-app.use('/api/v1/payment',paymentRouter)
+app.use('/api/v1/payment',paymentRouter);
+app.use('/api/v1/order',orderRouter);
 
 
 connectDB();
