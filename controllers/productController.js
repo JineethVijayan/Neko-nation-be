@@ -74,7 +74,7 @@ export const createProduct = async (req, res) => {
     } catch (error) {
 
         console.log("something went wrong", error);
-        res.send("failed to create product").status(500);
+        res.status(500).send("failed to create product");
 
     }
 

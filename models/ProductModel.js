@@ -18,15 +18,19 @@ const ProductSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['T-Shirt', 'Hoodie', 'Pants', 'Jacket', 'Accessories'], // Add more categories as needed
+    enum: ['T-Shirt', 'Hoodie', 'Pants', 'Jacket', 'Accessories'], 
   },
   subcategory: {
     type: String,
-    enum: ['Regularfit-Tshirt', 'Oversized-Tshirt', 'Printed-Shirt', 'Casual-Shirt']
+    enum: ['Regularfit-Tshirt', 'Oversized-Tshirt', 'Printed-Shirt', 'Casual-Shirt'],
+    required: false,
+    default: undefined, 
   },
   interests: {
     type: String,
-    enum: ['Culture','Movies','Sports','Anime','Music']
+    enum: ['Culture','Movies','Sports','Anime','Music'],
+    required: false,
+    default: undefined, 
   },
   gender: {
     type: String,

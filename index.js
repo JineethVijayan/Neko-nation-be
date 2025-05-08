@@ -16,12 +16,14 @@ const app = express();
 
 app.use(cookieParser());
 
-//app.use(cors({origin:process.env.fe_url,credentials:true}))
+// app.use(cors({origin:process.env.fe_url,credentials:true}))
 
 app.use(cors({
     origin: "https://www.nekonation.in",
     credentials: true,
   }));
+
+  //https://www.nekonation.in
   app.options("*", cors());
 
 
