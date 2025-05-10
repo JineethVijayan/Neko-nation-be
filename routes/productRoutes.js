@@ -1,5 +1,5 @@
 import express from "express";
-import { createProduct, getAllProducts, getLatestProducts, getProductById, getProductBySearch, productByGender, productByInterests, updateProduct } from "../controllers/productController.js";
+import { createProduct, deleteProduct, getAllProducts, getLatestProducts, getProductById, getProductBySearch, productByGender, productByInterests, updateProduct } from "../controllers/productController.js";
 import upload from "../middlewares/uploadMiddleware.js";
 import authenticateManager from "../middlewares/managerMiddleware.js";
 
@@ -16,6 +16,7 @@ productRouter.get('/latest-products',getLatestProducts);
 productRouter.get('/product-by-gender/:gender',productByGender);
 productRouter.get('/product-by-interests/:interests',productByInterests);
 productRouter.put('/update-product/:id',authenticateManager,upload.array("images", 10),updateProduct);
+productRouter.delete('/delete-product/:id',authenticateManager,deleteProduct)
 
 
 

@@ -257,3 +257,20 @@ console.log(images);
         res.status(500).json({ message: "Failed to update product" });
     }
 };
+
+
+export const deleteProduct = async(req,res)=>{
+
+    const id = req.params.id ;
+
+    if(!id){
+        return res.status(404).json({message:'Product id is Required'})
+    }
+
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
+    return await res.status(200).json({message:'Product successfully deleted'})
+
+
+
+}
